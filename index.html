@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Share+Tech+Mono" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link href="css/style.css" type="text/css" rel="stylesheet" >
+    <meta name="author" content="Nitin Chandran Nair">
+    <meta name="description" content="A simple usage of the TwitchTV JSON that displays offline as well as online streaming channels with their details!">
+</head>
+
+<body>
+    <section id="" class="center">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col s12 m12 l12">
+                    <header>
+                        <h3 class="animated fadeInDown black-text">TwitchTV App</h3>
+                    </header>
+                </div>
+            </div>   
+        </div>
+    </section>
+    
+    <section id="" class="center">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col s12 m12 l12">
+                    <input type="checkbox" class="filled-in" id="filled-in-box" checked/>
+                    <label for="filled-in-box">All Channels <small>[Now showing <span id="channel_status">All</span> Channels]</small></label>
+                    <div class="switch">
+                        <label>
+                            Offline
+                            <input type="checkbox" id="on-off">
+                            <span class="lever"></span>
+                            Online
+                        </label>
+                    </div>
+                </div>
+            </div>   
+        </div>
+    </section>
+    
+    <hr>
+    
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col s12 m12 l12">
+                    <div id="stream-data">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <footer class="indigo-text">
+            <div class="container">
+                <div class="row">
+                    <div class="col s12 m6 l6">
+                        <span id="social-links">
+                             <a href="https://www.facebook.com/nitin.c.nair.5" target="_blank">
+                                <i class="fa fa-2x fa-facebook"></i>
+                            </a> &nbsp;
+                            <a href="https://twitter.com/Nitin_Nair89" target="_blank">
+                                <i class="fa fa-2x fa-twitter"></i>
+                            </a> &nbsp;
+                            <a href="https://plus.google.com/+NitinNair89" target="_blank">
+                                <i class="fa fa-2x fa-google"></i>
+                            </a> &nbsp;
+                            <a href="https://github.com/NitinNair89" target="_blank">
+                                <i class="fa fa-2x fa-github"></i>
+                            </a> &nbsp;
+                            <a href="https://codepen.io/Nitin-Chandran-Nair" target="_blank">
+                                <i class="fa fa-2x fa-codepen"></i>
+                            </a> &nbsp;
+                            <a href="http://www.nitinchandrannair.com/NitinNairWrites" target="_blank">
+                                <i class="fa fa-2x fa-wordpress"></i>
+                            </a>
+                        </span>
+                    </div>
+                    <div class="col s12 m6 l6">
+                        <span>Developed by <a href="http://www.nitinchandrannair.com" target="_blank">Nitin Chandran Nair</a></span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </section>
+    
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+    <script src="config/config.js"></script>
+    
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var all = document.getElementById('filled-in-box'),
+                on_off = document.getElementById('on-off');  
+            
+            $(on_off).prop('disabled', true);
+            
+            theLoop();
+            
+            $(all).click(function(){
+               if(all.checked == true) {
+                   $(on_off).prop('disabled', true);
+                   $('#channel_status').text('All');
+                   $('.online').show();
+                   $('.offline').show();
+                } else {
+                    $(on_off).prop('disabled', false);
+                    $(all).prop('checked',false);
+                    getOnOffChannels(on_off.checked);
+                }
+            });
+            
+            $(on_off).click(function(){
+                getOnOffChannels(on_off.checked, 'on_off');
+            });
+        });
+        
+        function theLoop() {
+            var userArray = ["ESL_SC2", "OgamingSC2", "cretetion", "freecodecamp", "storbeck", "habathcx", "RobotCaleb", "noobs2ninjas"];   
+            userArray.forEach(function(userArrayItem){
+                getChannelData(userArrayItem);
+            })            
+        };
+        
+        function getOnOffChannels (status){
+            console.log(status);
+            if(status == true) {
+                $('#channel_status').text('Online');
+                $('.offline').hide();
+                $('.online').show();
+            } else {
+                $('#channel_status').text('Offline');
+                $('.online').hide();
+                $('.offline').show();                
+            }
+        };
+        
+        function getChannelData(name)  {
+            $.ajax({
+                type: 'GET',
+                url: 'https://api.twitch.tv/kraken/channels/' +name,
+                headers: {
+                    'Client-ID': config.key
+                },
+                success: function(data){
+                    formatData(data);
+                }
+            });  
+        };
+        
+        function formatData(data) {
+            var parseData = (data),
+                profile_banner = parseData.logo,
+                display_name = parseData.display_name,
+                stream_status = parseData.status,
+                followers = parseData.followers,
+                stream_list = document.getElementById('stream-data').innerHTML,
+                stream_url = parseData.url;
+            
+            if(stream_status === null){
+                stream_status = 'Channel is currently Offline';
+                stream_list = stream_list + "<div class='row offline'><div class='col s12 m1 l1'><img src='" +profile_banner+ "' class='responsive-img circle'></div><div class='col s12 m11 l11'><div class='row'><div class='col s12 m4 l4'><span class='title'>"+display_name+"</span></div><div class=col s12 m4 l4'><span class='card teal followers hoverable'>Followers:&nbsp;"+followers+"</span></div><div class='col s12 m4 l4'><span class='card teal followers hoverable'><a href='"+stream_url+"' target='_blank'>Visit Channel</a></span></div></div><div class='row'><div class='col s12 m12 l12'><p>"+stream_status+"</p></div></div></div></div>";
+            } else {
+                stream_list = stream_list + "<div class='row online'><div class='col s12 m1 l1'><img src='" +profile_banner+ "' class='responsive-img circle'></div><div class='col s12 m11 l11'><div class='row'><div class='col s12 m4 l4'><span class='title'>"+display_name+"</span></div><div class=col s12 m4 l4'><span class='card teal followers hoverable'>Followers:&nbsp;"+followers+"</span></div><div class='col s12 m4 l4'><span class='card teal followers hoverable'><a href='"+stream_url+"' target='_blank'>Visit Channel</a></span></div></div><div class='row'><div class='col s12 m12 l12'><p>"+stream_status+"</p></div></div></div></div>";
+            }
+            document.getElementById('stream-data').innerHTML = stream_list;
+            
+            $('.online').show();
+            $('.offline').show();
+        };
+    </script>
+</body>
+</html>
