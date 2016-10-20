@@ -1,0 +1,50 @@
+* {border: 0;}
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
+body{
+    font-family: 'Share Tech Mono', monospace;
+}
+.offline {
+    display: none;
+}
+.online {
+    display: block;
+}
+.row {
+    vertical-align: middle;
+    padding: 0;
+    margin: 2px;
+}
+.followers {
+    padding:5px;
+    margin:5px;
+}
+.title{
+    font-weight: bold;
+    font-size: 1.2em;
+}
+#stream-data a, .followers {
+    color: white;
+}
+#stream-data .online, #stream-data .offline {
+        border-radius: 7px;
+}
+#stream-data .offline{
+    background-color: lightgray;
+    color: darkslateblue;
+}
+hr{
+    height: 2px;
+    width: 80%;
+    background: -webkit-linear-gradient(right, indigo, red);
+    background: linear-gradient(270deg, indigo, red);
+}
+img {
+    max-width: 60px;
+    max-height: 60px;
+    border-radius: 50%;
+    margin: 0 auto;
+}
