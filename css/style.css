@@ -13,10 +13,8 @@ body{
 .online {
     display: block;
 }
-.row {
-    vertical-align: middle;
-    padding: 0;
-    margin: 2px;
+.row{
+    padding: 5px;
 }
 .followers {
     padding:5px;
