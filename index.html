@@ -30,16 +30,9 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col s12 m12 l12">
-                    <input type="checkbox" class="filled-in" id="filled-in-box" checked/>
-                    <label for="filled-in-box">All Channels <small>[Now showing <span id="channel_status">All</span> Channels]</small></label>
-                    <div class="switch">
-                        <label>
-                            Offline
-                            <input type="checkbox" id="on-off">
-                            <span class="lever"></span>
-                            Online
-                        </label>
-                    </div>
+                    <button class="btn btn-flat waves-effect waves-light animated fadeInUp" id="all">all channels</button>
+                    <button class="btn btn-flat waves-effect waves-light animated fadeInUp" id="off">offline</button>
+                    <button class="btn btn-flat waves-effect waves-light animated fadeInUp" id="on">online</button>
                 </div>
             </div>   
         </div>
@@ -98,52 +91,57 @@
     
     <script type="text/javascript">
         $(document).ready(function(){
-            var all = document.getElementById('filled-in-box'),
-                on_off = document.getElementById('on-off');  
-            
-            $(on_off).prop('disabled', true);
-            
+            var all = document.getElementById('all'),
+                off = document.getElementById('off'),
+                on = document.getElementById('on');  
+
             theLoop();
             
             $(all).click(function(){
-               if(all.checked == true) {
-                   $(on_off).prop('disabled', true);
-                   $('#channel_status').text('All');
-                   $('.online').show();
-                   $('.offline').show();
-                } else {
-                    $(on_off).prop('disabled', false);
-                    $(all).prop('checked',false);
-                    getOnOffChannels(on_off.checked);
-                }
+                $(this).addClass('green lighten-2');
+                $('.online').fadeIn();
+                $('.offline').fadeIn();
             });
             
-            $(on_off).click(function(){
-                getOnOffChannels(on_off.checked, 'on_off');
+            $(on).click(function(){
+                $(all).removeClass('green lighten-3');
+                $(off).removeClass('green lighten-3');
+                $(this).addClass('green lighten-2');
+                $('.online').fadeIn();
+                $('.offline').fadeOut();
+            });
+
+            $(off).click(function(){
+                $(all).removeClass('green lighten-3');
+                $(on).removeClass('green lighten-3');
+                $(this).addClass('green lighten-2');
+                $('.online').fadeOut();
+                $('.offline').fadeIn();
             });
         });
         
         function theLoop() {
             var userArray = ["ESL_SC2", "OgamingSC2", "cretetion", "freecodecamp", "storbeck", "habathcx", "RobotCaleb", "noobs2ninjas"];   
             userArray.forEach(function(userArrayItem){
-                getChannelData(userArrayItem);
+                getChannelStatus(userArrayItem);                
             })            
         };
         
-        function getOnOffChannels (status){
-            console.log(status);
-            if(status == true) {
-                $('#channel_status').text('Online');
-                $('.offline').hide();
-                $('.online').show();
-            } else {
-                $('#channel_status').text('Offline');
-                $('.online').hide();
-                $('.offline').show();                
-            }
+        function getChannelStatus(name){
+          $.ajax({
+              type: 'GET',
+              url: 'https://api.twitch.tv/kraken/streams/' +name,
+              headers: {
+                  'Client-ID': config.key
+              },
+              success: function(data){
+                var channelStatus = data.stream;
+                getChannelData(name, channelStatus);  
+              }
+          });  
         };
         
-        function getChannelData(name)  {
+        function getChannelData(name, channelStatus)  {
             $.ajax({
                 type: 'GET',
                 url: 'https://api.twitch.tv/kraken/channels/' +name,
@@ -151,12 +149,12 @@
                     'Client-ID': config.key
                 },
                 success: function(data){
-                    formatData(data);
+                    formatData(data, channelStatus);
                 }
             });  
         };
         
-        function formatData(data) {
+        function formatData(data, channelStatus) {            
             var parseData = (data),
                 profile_banner = parseData.logo,
                 display_name = parseData.display_name,
@@ -165,7 +163,7 @@
                 stream_list = document.getElementById('stream-data').innerHTML,
                 stream_url = parseData.url;
             
-            if(stream_status === null){
+            if(channelStatus === null){
                 stream_status = 'Channel is currently Offline';
                 stream_list = stream_list + "<div class='row offline'><div class='col s12 m1 l1'><img src='" +profile_banner+ "' class='responsive-img circle'></div><div class='col s12 m11 l11'><div class='row'><div class='col s12 m4 l4'><span class='title'>"+display_name+"</span></div><div class=col s12 m4 l4'><span class='card teal followers hoverable'>Followers:&nbsp;"+followers+"</span></div><div class='col s12 m4 l4'><span class='card teal followers hoverable'><a href='"+stream_url+"' target='_blank'>Visit Channel</a></span></div></div><div class='row'><div class='col s12 m12 l12'><p>"+stream_status+"</p></div></div></div></div>";
             } else {

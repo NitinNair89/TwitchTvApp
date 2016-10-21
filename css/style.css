@@ -7,6 +7,7 @@ body {
 body{
     font-family: 'Share Tech Mono', monospace;
 }
+
 .offline {
     display: none;
 }
