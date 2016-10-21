@@ -99,6 +99,8 @@
             
             $(all).click(function(){
                 $(this).addClass('green lighten-2');
+                $(on).removeClass('green lighten-3');
+                $(off).removeClass('green lighten-3');
                 $('.online').fadeIn();
                 $('.offline').fadeIn();
             });
