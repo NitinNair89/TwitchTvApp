@@ -195,7 +195,7 @@
                 stream_url = parseData.url,
                 stream_status = parseData.status;
                 
-                if(stream_status === null){
+                if(channelStatus === null){
                     stream_status = 'Channel is currently Offline';
                     stream_list = stream_list + "<div class='row offline'><div class='col s12 m1 l1'><img src='" +profile_banner+ "' class='responsive-img circle'></div><div class='col s12 m11 l11'><div class='row'><div class='col s12 m4 l4'><span class='title'>"+display_name+"</span></div><div class=col s12 m4 l4'><span class='card teal followers hoverable'>Followers:&nbsp;"+followers+"</span></div><div class='col s12 m4 l4'><span class='card teal followers hoverable'><a href='"+stream_url+"' target='_blank'>Visit Channel</a></span></div></div><div class='row'><div class='col s12 m12 l12'><p>"+stream_status+"</p></div></div></div></div>";
                 } else {
