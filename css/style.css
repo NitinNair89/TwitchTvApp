@@ -7,13 +7,6 @@ body {
 body{
     font-family: 'Share Tech Mono', monospace;
 }
-
-.offline {
-    display: none;
-}
-.online {
-    display: block;
-}
 .row{
     padding: 5px;
 }
@@ -28,12 +21,16 @@ body{
 #stream-data a, .followers {
     color: white;
 }
-#stream-data .online, #stream-data .offline {
-        border-radius: 7px;
+#stream-data .online, #stream-data .offline, #stream-data .inactive {
+    border-radius: 7px;
 }
 #stream-data .offline{
     background-color: lightgray;
     color: darkslateblue;
+}
+#stream-data .inactive {
+    background-color: black;
+    color: dimgrey;
 }
 hr{
     height: 2px;
